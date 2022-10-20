@@ -36,8 +36,6 @@ class Server {
         this.app.use(cors());
         // Allowed JSON request body
         this.app.use(express.json());
-        // Set a public folder
-        this.app.use(express.static('public'));
 
     }
 

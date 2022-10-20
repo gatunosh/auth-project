@@ -3,6 +3,7 @@ import { check } from 'express-validator';
 import { createUser, login, renewToken } from '../controllers/auth.controller';
 
 import { validateFields } from '../middlewares/fields-validations';
+import { validateJWT } from '../middlewares/jwt-validation';
 
 const router = Router();
 
@@ -33,7 +34,13 @@ router.post(
 );
 
 // Validate and revalidate token
-router.get('/renew', renewToken);
+router.get(
+    '/renew',
+    [
+        validateJWT
+    ],
+    renewToken
+);
 
 
 export default router;

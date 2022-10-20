@@ -48,17 +48,55 @@ export const createUser = async (req: Request, res: Response) => {
 
 }
 
-export const login = (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
 
-    const { email, password } = req.body;
+        const dbUser = await ResUser.findOneBy({email});
 
-    res.json({
-        msg: 'User login'
-    })
+        if(!dbUser) return res.status(400).send({msg: '(Email) or password is not valid'})
+
+        // Password match
+        const validPassword = bcrypt.compareSync(password, dbUser.password);
+
+        if(!validPassword) return res.status(400).send({msg: 'Email or (password) is not valid'})
+
+        const token = await generateJWT(dbUser.id, dbUser.first_name, dbUser.last_name)
+        
+        // Success Response
+
+        return res.json({
+            id: dbUser.id,
+            token,
+            name: `${dbUser.first_name} ${dbUser.last_name}`
+        })
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({
+                msg: error.message
+            })
+        }
+    }
 }
 
-export const renewToken = (req: Request, res: Response) => {
-    res.json({
-        msg: 'Renew'
-    })
+export const renewToken = async (req: Request, res: Response) => {
+    try {
+        
+        const { id, first_name, last_name } = req;
+
+        const newToken = await generateJWT(id, first_name, last_name);
+
+        return res.json({
+            id,
+            first_name,
+            last_name,
+            token: newToken
+        });
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({
+                msg: error.message
+            })
+        }
+    }
 }

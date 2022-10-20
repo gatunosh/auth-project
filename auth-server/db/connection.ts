@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+import { ResUser } from '../entities/ResUser.entity';
 
 export const AppDataSource = new DataSource({
     type: "mssql",
@@ -7,10 +8,10 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    entities: [],
+    entities: [ResUser],
     logging: true,
     extra: {
         trustServerCertificate: true
-    }
-    // synchronize: true
+    },
+    synchronize: true
 });
